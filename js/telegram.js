@@ -14,13 +14,14 @@ export const isTelegram = Boolean(webApp && webApp.initData);
 
 // Соответствие между цветами темы Telegram и CSS-переменными нашего style.css.
 // Слева — имя поля в webApp.themeParams, справа — имя CSS-переменной.
+// Цвет кнопок (button_color) намеренно не берём: в стандартных темах Telegram
+// он синий и спорит с живописью тушью. Акцент остаётся киноварным из style.css,
+// а светлый или тёмный вариант акцента выбирается по атрибуту data-theme.
 const THEME_TO_CSS = {
   bg_color: '--color-bg',
   secondary_bg_color: '--color-surface',
   text_color: '--color-text',
   hint_color: '--color-muted',
-  button_color: '--color-accent',
-  button_text_color: '--color-accent-text',
 };
 
 // Переносит цвета из темы пользователя Telegram в CSS-переменные страницы.
