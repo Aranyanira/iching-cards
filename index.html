@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <!-- Без этой строки телефон отрисует страницу как для компьютера и уменьшит её.
+       viewport-fit=cover разрешает занять всю площадь экрана с вырезом. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- Сообщаем браузеру, что у страницы есть светлая и тёмная тема.
+       Тогда системные элементы (полосы прокрутки) тоже станут тёмными. -->
+  <meta name="color-scheme" content="light dark">
+  <title>Книга перемен</title>
+
+  <!-- Официальный скрипт Telegram. Он подключается обычным (не module) скриптом
+       и до нашего кода, чтобы window.Telegram уже существовал, когда запустится app.js. -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Шрифт PT Serif хорошо читается и содержит полный набор кириллических букв.
+       display=swap: пока шрифт грузится, текст показывается запасным шрифтом. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="app">
+
+    <!-- Экран 1: стартовый. Атрибут hidden скрывает экран, app.js переключает его. -->
+    <section id="start-screen" class="screen screen--start">
+      <!-- Красная печать в духе подписи на китайской картине. Это просто знак,
+           поэтому aria-hidden скрывает его от программ чтения с экрана. -->
+      <div class="seal" aria-hidden="true">易</div>
+      <h1 class="start-title">Задумайте свой вопрос и&nbsp;вытяните карту</h1>
+      <button id="draw-button" class="button button--primary" type="button" disabled>
+        Взять карту
+      </button>
+      <!-- Сюда выводится сообщение, если колода не загрузилась.
+           role="alert" заставляет программы чтения с экрана сразу его озвучить. -->
+      <p id="status-message" class="status" role="alert" hidden></p>
+    </section>
+
+    <!-- Экран 2: карта. -->
+    <section id="card-screen" class="screen screen--card" hidden>
+      <!-- card-scene задаёт перспективу, без неё поворот выглядел бы плоским. -->
+      <div class="card-scene">
+        <!-- card — то, что поворачивается. Класс is-flipped поворачивает его на 180°. -->
+        <div id="card" class="card">
+
+          <!-- Лицевая сторона -->
+          <article id="card-front" class="card-face card-front">
+            <!-- width и height задают пропорции картинки (896×1200 = 3:4) заранее,
+                 чтобы место под картинку было зарезервировано до её загрузки. -->
+            <img id="card-image" class="card-image" src="" alt="" width="896" height="1200">
+            <div class="card-caption">
+              <h2 id="card-title" class="card-title"></h2>
+              <p id="card-quote" class="card-quote"></p>
+              <button id="read-button" class="button button--ghost" type="button">
+                Читать полное толкование
+              </button>
+            </div>
+          </article>
+
+          <!-- Обратная сторона -->
+          <article id="card-back" class="card-face card-back" inert>
+            <h2 id="card-back-title" class="card-back-title"></h2>
+            <!-- tabindex="0" позволяет прокручивать текст с клавиатуры. -->
+            <div id="card-text" class="card-text" tabindex="0"></div>
+            <button id="back-button" class="button button--ghost" type="button">
+              Назад
+            </button>
+          </article>
+
+        </div>
+      </div>
+
+      <button id="new-question-button" class="button button--primary" type="button">
+        Задать новый вопрос
+      </button>
+    </section>
+
+  </main>
+
+  <!-- type="module" позволяет использовать import/export между файлами.
+       Такие скрипты браузер выполняет после разбора всего HTML,
+       поэтому все элементы выше уже существуют. -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

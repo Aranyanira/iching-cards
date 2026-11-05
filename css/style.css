@@ -1,0 +1,338 @@
+/* style.css — оформление в духе китайской живописи тушью:
+   рисовая бумага, чёрная тушь и одна красная «печать» как акцент. */
+
+/* ---------- Цвета ----------
+   Все цвета заданы переменными в одном месте. Остальные правила используют
+   только переменные, поэтому для тёмной темы и для темы Telegram достаточно
+   поменять значения переменных, а не переписывать каждое правило. */
+
+:root {
+  --color-bg: #f2ede3;           /* фон: тёплая рисовая бумага */
+  --color-surface: #faf7f1;      /* карта: бумага чуть светлее фона */
+  --color-text: #2a2724;         /* основной текст: тушь */
+  --color-muted: #776f65;        /* второстепенный текст: разбавленная тушь */
+  --color-accent: #9e3b2e;       /* акцент: киноварь, цвет печати */
+  --color-accent-text: #fbf7ef;  /* текст на акцентной кнопке */
+  --color-border: rgba(42, 39, 36, 0.14);
+  --shadow: 0 10px 30px rgba(42, 39, 36, 0.12);
+
+  /* Высота окна. Скрипт Telegram сам создаёт переменную
+     --tg-viewport-stable-height с высотой окна Mini App.
+     В браузере её нет, и тогда берётся 100dvh — высота видимой части экрана. */
+  --app-height: var(--tg-viewport-stable-height, 100dvh);
+}
+
+/* Тёмная тема системы. Условие :not([data-theme="light"]) нужно для Telegram:
+   если там включена светлая тема, а в системе тёмная, побеждает Telegram. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #171614;
+    --color-surface: #22201d;
+    --color-text: #e8e2d6;
+    --color-muted: #a39a8c;
+    --color-accent: #c25a45;
+    --color-accent-text: #fdf8f0;
+    --color-border: rgba(232, 226, 214, 0.14);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+}
+
+/* Тёмная тема Telegram (атрибут data-theme ставит telegram.js).
+   Блок повторяет значения выше, потому что в CSS нельзя написать
+   одно правило сразу для media-запроса и для атрибута. */
+:root[data-theme="dark"] {
+  --color-bg: #171614;
+  --color-surface: #22201d;
+  --color-text: #e8e2d6;
+  --color-muted: #a39a8c;
+  --color-accent: #c25a45;
+  --color-accent-text: #fdf8f0;
+  --color-border: rgba(232, 226, 214, 0.14);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- Основа ---------- */
+
+/* box-sizing: border-box включает рамку и отступы в ширину элемента.
+   Так проще считать размеры: width: 100% не вылезает за край. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Атрибут hidden по умолчанию даёт display: none, но правило .screen
+   с display: flex ниже перебило бы его. !important сохраняет скрытие. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: "PT Serif", Georgia, "Noto Serif", "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.55;
+  /* Отключает подсветку при нажатии на телефоне, она выглядит резко. */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  min-height: var(--app-height);
+  /* Ширина рассчитана на телефон. На широком экране содержимое
+     остаётся узкой колонкой по центру. */
+  max-width: 440px;
+  margin: 0 auto;
+  /* env(safe-area-inset-*) — отступ от выреза и закруглений экрана iPhone. */
+  padding:
+    max(16px, env(safe-area-inset-top))
+    16px
+    max(16px, env(safe-area-inset-bottom));
+}
+
+.screen {
+  min-height: calc(var(--app-height) - 32px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  /* Плавное появление экрана при переключении. */
+  animation: fade-in 0.4s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ---------- Кнопки ---------- */
+
+.button {
+  font: inherit;
+  font-size: 16px;
+  min-height: 44px;          /* 44px — удобный размер для нажатия пальцем */
+  padding: 10px 24px;
+  border-radius: 999px;      /* большое значение даёт полностью скруглённые края */
+  border: 1px solid var(--color-accent);
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.button:active {
+  transform: scale(0.97);    /* лёгкое «нажатие», чтобы было видно отклик */
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.button--primary {
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--color-accent);
+}
+
+/* Видимая рамка фокуса для управления с клавиатуры. */
+.button:focus-visible,
+.card-text:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ---------- Стартовый экран ---------- */
+
+.screen--start {
+  justify-content: center;
+  text-align: center;
+  gap: 28px;
+}
+
+/* Печать: квадрат киноварного цвета с иероглифом 易 («перемена»). */
+.seal {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  font-size: 36px;
+  border-radius: 6px;
+  /* Небольшой наклон, как у печати, поставленной от руки. */
+  transform: rotate(-4deg);
+}
+
+.start-title {
+  margin: 0;
+  max-width: 300px;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.status {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 15px;
+}
+
+/* ---------- Карта и переворот ---------- */
+
+.screen--card {
+  justify-content: center;
+}
+
+.card-scene {
+  /* Ширина карты — наименьшее из трёх значений:
+     вся ширина колонки, 400px, или ширина, при которой карта
+     помещается по высоте окна. Картинка имеет пропорцию 3:4,
+     поэтому ширина = высота картинки × 0.75. 340px оставлено под
+     подпись на карте и кнопку «Задать новый вопрос».
+     max(260px, ...) не даёт карте стать слишком узкой на низком экране. */
+  width: min(100%, 400px, max(260px, calc((var(--app-height) - 340px) * 0.75)));
+  /* perspective — расстояние до «глаза» зрителя. Чем меньше число,
+     тем сильнее искажение при повороте. Без perspective поворот плоский. */
+  perspective: 1400px;
+}
+
+.card {
+  position: relative;
+  /* preserve-3d сохраняет 3D-положение сторон внутри карты.
+     Без него обе стороны были бы нарисованы как одна плоская картинка. */
+  transform-style: preserve-3d;
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  /* Сторона, повёрнутая от зрителя, не рисуется.
+     Префикс -webkit- нужен для Safari и Telegram на iPhone. */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Лицевая сторона стоит в обычном потоке и задаёт высоту всей карты. */
+.card-front {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Пропорция картинок 896×1200 = 3:4. */
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  /* Пока картинка грузится, на её месте виден фон, а не пустота. */
+  background: var(--color-border);
+}
+
+.card-caption {
+  padding: 14px 18px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.card-quote {
+  margin: 0 0 4px;
+  color: var(--color-muted);
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Обратная сторона лежит поверх лицевой (position: absolute; inset: 0)
+   и поэтому получает точно такой же размер. Заранее повёрнута на 180°,
+   чтобы после поворота всей карты оказаться лицом к зрителю. */
+.card-back {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 16px;
+  gap: 12px;
+}
+
+.card-back-title {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 18px;
+  text-align: center;
+}
+
+/* Текст занимает всё свободное место между заголовком и кнопкой
+   и прокручивается сам, если не помещается.
+   min-height: 0 нужен, иначе flex-элемент растягивается под весь текст
+   и прокрутка не появляется. */
+.card-text {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* Прокрутка текста не передаётся странице, когда текст закончился. */
+  overscroll-behavior: contain;
+  padding-right: 4px;
+  font-size: 16px;
+}
+
+.card-text p {
+  margin: 0 0 12px;
+}
+
+/* Подзаголовок «Наставление»: красный, как печать, с отступом сверху,
+   чтобы визуально отделить последний абзац. */
+.card-text h3 {
+  margin: 20px 0 6px;
+  color: var(--color-accent);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card-back .button {
+  align-self: center;
+}
+
+/* На узкой карте у кнопки с длинной надписью отступы чуть меньше,
+   чтобы надпись чаще помещалась в одну строку. */
+.card-caption .button {
+  padding-inline: 16px;
+  font-size: 15px;
+}
+
+/* Если пользователь включил в системе «уменьшить движение»,
+   переворот происходит почти мгновенно, без долгой анимации. */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition-duration: 0.01s;
+  }
+  .screen {
+    animation: none;
+  }
+}
